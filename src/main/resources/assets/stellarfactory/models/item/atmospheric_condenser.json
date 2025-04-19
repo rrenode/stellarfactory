@@ -1,5 +1,5 @@
 {
-  "parent": "stellarfactory:block/atmospheric_condenser",
+  "parent": "builtin/entity",
   "texture_size": [
     128,
     128
