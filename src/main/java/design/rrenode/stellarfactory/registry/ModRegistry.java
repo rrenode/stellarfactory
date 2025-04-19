@@ -5,13 +5,13 @@ import design.rrenode.stellarfactory.StellarFactory;
 import design.rrenode.stellarfactory.blocks.AtmosphericCondenserBlock;
 import design.rrenode.stellarfactory.entities.AtmosphericCondenserEntity;
 import design.rrenode.stellarfactory.registry.ModRegistry;
+import design.rrenode.stellarfactory.items.AtmosphericCondenserBlockItem;
 import design.rrenode.stellarfactory.items.HandScannerItem;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -30,8 +30,10 @@ public class ModRegistry {
         BLOCKS.register("atmospheric_condenser", () ->
             new AtmosphericCondenserBlock(BlockBehaviour.Properties.of().strength(2.0F).noOcclusion()));
 
-    public static final DeferredHolder<Item, BlockItem> ATMOSPHERIC_CONDENSER_BLOCK_ITEM =
-        ITEMS.register("atmospheric_condenser", () -> new BlockItem(ATMOSPHERIC_CONDENSER_BLOCK.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, AtmosphericCondenserBlockItem> ATMOSPHERIC_CONDENSER_BLOCK_ITEM =
+        ITEMS.register("atmospheric_condenser", () ->
+            new AtmosphericCondenserBlockItem(ATMOSPHERIC_CONDENSER_BLOCK.get(), new Item.Properties()));
+
 
     @SuppressWarnings({ "DataFlowIssue", "null" })
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AtmosphericCondenserEntity>> ATMOSPHERIC_CONDENSER_ENTITY =
