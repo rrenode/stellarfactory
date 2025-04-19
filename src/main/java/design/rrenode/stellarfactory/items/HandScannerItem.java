@@ -7,10 +7,11 @@ import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar;
-import design.rrenode.stellarfactory.client.renderers.HandScannerRenderer;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.Item;
 import java.util.function.Consumer;
+
+import design.rrenode.stellarfactory.client.renderers.Items.HandScanner.HandScannerRenderer;
 
 public final class HandScannerItem extends Item implements GeoItem {
 

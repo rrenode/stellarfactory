@@ -1,5 +1,5 @@
 // src\main\java\design\rrenode\stellarfactory\client\renderers\AtmosphericCondenserModel.java
-package design.rrenode.stellarfactory.client.renderers;
+package design.rrenode.stellarfactory.client.renderers.Blocks.AtmosphericCondenser;
 
 import design.rrenode.stellarfactory.StellarFactory;
 import design.rrenode.stellarfactory.entities.AtmosphericCondenserEntity;

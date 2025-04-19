@@ -8,7 +8,7 @@ import com.mojang.logging.LogUtils;
 import design.rrenode.stellarfactory.VitalisProtection.BuildProtectionHandler;
 import design.rrenode.stellarfactory.VitalisProtection.ZoneCommands;
 import design.rrenode.stellarfactory.client.ClientInit;
-import design.rrenode.stellarfactory.client.renderers.AtmosphericCondenserRenderer;
+import design.rrenode.stellarfactory.client.renderers.Blocks.AtmosphericCondenser.AtmosphericCondenserRenderer;
 import design.rrenode.stellarfactory.entities.AtmosphericCondenserEntity;
 import design.rrenode.stellarfactory.registry.ModRegistry;
 import net.minecraft.client.Minecraft;
