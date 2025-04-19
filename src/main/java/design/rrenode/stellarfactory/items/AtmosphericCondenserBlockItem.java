@@ -1,9 +1,7 @@
 package design.rrenode.stellarfactory.items;
 
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 import software.bernie.geckolib.animatable.GeoItem;
