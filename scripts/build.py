@@ -17,11 +17,9 @@ def run_gradle_build():
 
     if not os.path.exists(gradle_cmd):
         print(f"Error: '{gradle_cmd}' not found in the current directory.")
-        return
-
+        return []
+    output_buffer = []
     try:
-        output_buffer = []
-
         process = subprocess.Popen(
             [gradle_cmd, "build"],
             stdout=subprocess.PIPE,
@@ -38,6 +36,8 @@ def run_gradle_build():
         dprint("Build exited with code " + str(process.returncode), "gradlew")
     except Exception as e:
         dprint(f"Unexpected error: {e}", "gradlew")
+    finally:
+        return output_buffer
 
 def copy_file_to_dir(source_file: Path, target_dir: Path):
     source_file = Path(source_file)
@@ -51,19 +51,26 @@ def copy_file_to_dir(source_file: Path, target_dir: Path):
     shutil.copy2(source_file, destination)
     dprint(f"Copied \n\t{source_file} \n\t\tto\n\t{destination}", "copy")
 
-def clear_terminal():
-    os.system('cls' if os.name == 'nt' else 'clear')
+def clear_build_logs(num_lines: int):
+    """
+    Move the cursor up `num_lines` and clear from there to the end of screen.
+    This will remove only the Gradle output, not your shell prompt.
+    """
+    if num_lines <= 0:
+        return
+    # \x1b[{n}A = cursor up n lines, \x1b[J = clear from cursor to end of screen
+    print(f"\x1b[{num_lines}A", end='')
+    print("\x1b[J", end='')
 
 if __name__ == "__main__":
-    run_gradle_build()
+    logs = run_gradle_build()
 
     builder_modpack_mods_dir = Path("G:/PrismMC/Instances/1.21.1(1)/minecraft/mods")
     jar_path = Path("G:/mc/FUN/CustomMods/stellarfactory-template-1.21.1/build/libs/stellarfactory-1.0.0.jar")
 
     copy_file_to_dir(jar_path, builder_modpack_mods_dir)
 
-    # Clear previous build output and show only final messages
-    clear_terminal()
+    clear_build_logs(len(logs))
 
     for msg in deferred_prints:
         print(msg)
