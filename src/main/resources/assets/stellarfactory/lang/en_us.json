@@ -1,4 +1,5 @@
 {
   "itemGroup.stellarfactory": "Example Mod Tab",
-  "block.stellarfactory.atmospheric_condenser": "Atmospheric Condenser"
+  "block.stellarfactory.atmospheric_condenser": "Atmospheric Condenser",
+  "item.stellarfactory.hand_scanner": "Hand Scanner"
 }
