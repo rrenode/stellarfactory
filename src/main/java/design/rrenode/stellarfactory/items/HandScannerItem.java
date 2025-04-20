@@ -4,6 +4,11 @@ package design.rrenode.stellarfactory.items;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.UUID;
+import java.util.function.Consumer;
+
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.SingletonGeoAnimatable;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
@@ -28,8 +33,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-
-import java.util.function.Consumer;
+import net.minecraft.network.chat.Component;
 
 import design.rrenode.stellarfactory.client.renderers.Items.HandScanner.HandScannerRenderer;
 
@@ -82,10 +86,40 @@ public final class HandScannerItem extends Item implements GeoItem {
         return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
 
+    private final Map<UUID, Object> lastScanTarget = new HashMap<>();
+
+
+    //BUG: doesn't scan if you hold right click while changing target and then stop
     @Override
     public void inventoryTick(@Nonnull ItemStack stack, @Nonnull Level level,@Nonnull Entity entity, int slot, boolean selected) {
         boolean SCOPED_DEBUG = false;
         if (!level.isClientSide && entity instanceof Player player && player.isUsingItem() && player.getUseItem() == stack) {
+            
+            UUID id = player.getUUID();
+
+            // Determine current target (entity or block)
+            Object currentTarget;
+            EntityHitResult entityHit = getEntityHit(level, player, 5.0D);
+            HitResult blockHit = player.pick(5.0D, 0.0F, true);
+            if (entityHit != null) {
+                currentTarget = entityHit.getEntity().getId(); // entity id is unique per world
+            } else {
+                if (blockHit.getType() == HitResult.Type.BLOCK) {
+                    currentTarget = ((BlockHitResult) blockHit).getBlockPos();
+                } else {
+                    currentTarget = "MISS";
+                }
+            }
+
+            // Compare to previous
+            Object previousTarget = lastScanTarget.get(id);
+            if (!currentTarget.equals(previousTarget)) {
+                // Target changed → restart
+                lastScanTarget.put(id, currentTarget);
+                player.startUsingItem(player.getUsedItemHand());
+                return;
+            }
+
             int useTime = getUseDuration(stack, player) - player.getUseItemRemainingTicks();
 
             if (useTime % 20 == 0) {
@@ -93,40 +127,43 @@ public final class HandScannerItem extends Item implements GeoItem {
                     System.out.println("Server: Holding for " + (useTime / 20) + "s...");
                 }
             }
-            String scan_result = "";
-            EntityHitResult entityHit = getEntityHit(level, player, 5.0D);
-            if (entityHit != null) {
-                Entity target = entityHit.getEntity();
-                scan_result = "Scanned Entity: " + target.getName().getString();
-            } else {
-                // fallback to block scanning
-                HitResult blockHit = player.pick(5.0D, 0.0F, true);
-                switch (blockHit.getType()) {
-                    case BLOCK -> {
-                        BlockHitResult bhr = (BlockHitResult) blockHit;
-                        BlockPos pos = bhr.getBlockPos();
-                        BlockState state = level.getBlockState(pos);
             
-                        if (!state.getFluidState().isEmpty()) {
-                            scan_result = "Scanned Fluid: " + state.getFluidState().getType().toString();
-                        } else {
-                            scan_result = "Scanned Block: " + state.getBlock().getName().getString();
+            if (useTime == 80) {
+                String scan_result = "";
+            
+                if (entityHit != null) {
+                    Entity target = entityHit.getEntity();
+                    scan_result = "Scanned Entity: " + target.getName().getString();
+                } else {
+                    switch (blockHit.getType()) {
+                        case BLOCK -> {
+                            BlockHitResult bhr = (BlockHitResult) blockHit;
+                            BlockPos pos = bhr.getBlockPos();
+                            BlockState state = level.getBlockState(pos);
+            
+                            if (!state.getFluidState().isEmpty()) {
+                                scan_result = "Scanned Fluid: " + state.getFluidState().getType().toString();
+                            } else {
+                                scan_result = "Scanned Block: " + state.getBlock().getName().getString();
+                            }
+                        }
+            
+                        case MISS -> {
+                            scan_result = "Scan found nothing.";
+                        }
+            
+                        case ENTITY -> {
+                            // Shouldn’t happen, since entity scanning is handled separately
+                        }
+            
+                        default -> {
+                            scan_result = "Unhandled scan type: " + blockHit.getType();
                         }
                     }
-            
-                    case MISS -> {
-                        scan_result = "Scan found nothing.";
-                    }
-
-                    case ENTITY -> {
-                        // Shouldn't happen, since we already handle entity scanning above
-                    }
-
-                    default -> {
-                        // Unhandled type
-                        scan_result = "Unhandled scan type: " + blockHit.getType();
-                    }
                 }
+            
+                player.sendSystemMessage(Component.literal(scan_result));
+                lastScanTarget.remove(id); // Clear scan state after scan
             }
         }
     }
@@ -145,8 +182,7 @@ public final class HandScannerItem extends Item implements GeoItem {
     @Override
     public void releaseUsing(@Nonnull ItemStack stack, @Nonnull Level level, @Nonnull LivingEntity entity, int timeLeft) {
         if (!level.isClientSide && entity instanceof Player player) {
-            int useTime = getUseDuration(stack, entity) - timeLeft;
-            //System.out.println("Player released scanner after " + useTime + " ticks.");
+            lastScanTarget.remove(player.getUUID());
         }
     }
 
