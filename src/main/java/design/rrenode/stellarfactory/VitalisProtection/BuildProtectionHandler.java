@@ -88,9 +88,10 @@ public class BuildProtectionHandler {
 
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        System.out.println("Break event triggered at: " + event.getPos());
+        // Fallback if the other fails
+        //System.out.println("Break event triggered at: " + event.getPos());
         if (isInRestrictedZone(event.getPos(), event.getLevel()) && !playerHasPermission(event.getPlayer())) {
-            System.out.println("Inside restricted zone!");
+            //System.out.println("Inside restricted zone!");
             event.setCanceled(true);
             if (event.getPlayer() instanceof ServerPlayer player) {
                 player.sendSystemMessage(Component.literal("You can't break blocks here yet!"));

@@ -39,7 +39,7 @@ def run_gradle_build():
     finally:
         return output_buffer
 
-def copy_file_to_dir(source_file: Path, target_dir: Path):
+def copy_file_to_dir(source_file: Path, target_dir: Path, ignore_prints=False):
     source_file = Path(source_file)
     target_dir = Path(target_dir)
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -49,7 +49,8 @@ def copy_file_to_dir(source_file: Path, target_dir: Path):
 
     destination = target_dir / source_file.name
     shutil.copy2(source_file, destination)
-    dprint(f"Copied \n\t{source_file} \n\t\tto\n\t{destination}", "copy")
+    if not ignore_prints:
+        dprint(f"Copied \n\t{source_file} \n\t\tto\n\t{destination}", "copy")
 
 def clear_build_logs(num_lines: int):
     """
@@ -66,9 +67,11 @@ if __name__ == "__main__":
     logs = run_gradle_build()
 
     builder_modpack_mods_dir = Path("G:/PrismMC/Instances/1.21.1(1)/minecraft/mods")
+    export_dir = Path("G:\\mc\\FUN\\CustomMods\\Exports")
     jar_path = Path("G:/mc/FUN/CustomMods/stellarfactory-template-1.21.1/build/libs/stellarfactory-1.0.0.jar")
 
     copy_file_to_dir(jar_path, builder_modpack_mods_dir)
+    copy_file_to_dir(jar_path, export_dir, True)
 
     clear_build_logs(len(logs))
 

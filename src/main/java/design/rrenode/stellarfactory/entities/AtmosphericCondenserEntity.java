@@ -1,6 +1,8 @@
 // src\main\java\design\rrenode\stellarfactory\entities\AtmosphericCondenserEntity.java
 package design.rrenode.stellarfactory.entities;
 
+import javax.annotation.Nonnull;
+
 import design.rrenode.stellarfactory.registry.ModRegistry;
 
 import net.minecraft.core.BlockPos;
@@ -16,6 +18,8 @@ import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.animation.Animation.LoopType;
 import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+
+import net.neoforged.neoforge.energy.EnergyStorage;
 
 public class AtmosphericCondenserEntity extends BlockEntity implements GeoBlockEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -37,5 +41,19 @@ public class AtmosphericCondenserEntity extends BlockEntity implements GeoBlockE
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
+    }
+
+    private final EnergyStorage energyStorage = new EnergyStorage(10000, 100, 0);
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        // Invalidate your capabilities here if needed
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
+        // Revive your capabilities here if needed
     }
 }

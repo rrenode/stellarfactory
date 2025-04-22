@@ -27,4 +27,4 @@ public class AtmosphericCondenserBlock extends Block implements EntityBlock {
     public RenderShape getRenderShape(@Nonnull BlockState state) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
-    }
+}
